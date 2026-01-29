@@ -1,0 +1,21 @@
+@startuml
+skinparam shadowing false
+
+[*] --> Requested : createBooking()
+
+Requested --> PendingApproval : requiresHostApproval
+Requested --> Approved : autoApprove
+
+PendingApproval --> Approved : hostApproves
+PendingApproval --> Rejected : hostRejects
+
+Approved --> Confirmed : paymentSuccess
+Approved --> Cancelled : renterCancels
+
+Confirmed --> Completed : endDatePassed
+Confirmed --> Cancelled : cancelBeforeStart
+
+Cancelled --> [*]
+Rejected --> [*]
+Completed --> [*]
+@enduml

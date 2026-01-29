@@ -1,0 +1,38 @@
+@startuml
+actor Renter
+participant "UI" as UI
+participant "ChatbotService" as Bot
+participant "ListingService" as LS
+participant "BookingService" as BS
+participant "PaymentService" as PS
+database "DB" as DB
+
+Renter -> UI : openChat()
+UI -> Bot : startSession(userId)
+Bot -> DB : createChatSession()
+DB --> Bot : sessionId
+Bot --> UI : greet + ask questions
+
+Renter -> UI : providePreferences()
+UI -> Bot : sendMessage(sessionId, text)
+Bot -> LS : search(criteria)
+LS -> DB : query(criteria)
+DB --> LS : listings
+LS --> Bot : listings
+Bot --> UI : recommend(listings)
+
+Renter -> UI : book(listingId, dates)
+UI -> BS : createBooking(userId, listingId, dates)
+BS -> DB : checkAvailability()
+DB --> BS : available
+BS -> DB : saveBooking(status=APPROVED)
+DB --> BS : bookingId
+BS --> UI : showPayment(bookingId, amount)
+
+Renter -> UI : payNow()
+UI -> PS : pay(bookingId, amount)
+PS -> DB : savePayment(status=SUCCESS)
+PS -> BS : confirmBooking(bookingId)
+BS -> DB : updateBooking(CONFIRMED)
+BS --> UI : bookingConfirmed(receipt)
+@enduml

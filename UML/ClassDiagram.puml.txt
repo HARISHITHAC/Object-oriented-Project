@@ -1,0 +1,117 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class User {
+  +id: UUID
+  +name: String
+  +email: String
+  +passwordHash: String
+  +role: Role
+}
+
+enum Role {
+  RENTER
+  HOST
+  ADMIN
+}
+
+abstract class Listing {
+  +id: UUID
+  +title: String
+  +description: String
+  +pricePerDay: Money
+  +location: String
+  +status: ListingStatus
+}
+
+enum ListingStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+class PropertyListing {
+  +propertyType: String
+  +maxGuests: int
+}
+
+class EquipmentListing {
+  +equipmentType: String
+  +condition: String
+}
+
+class AvailabilitySlot {
+  +id: UUID
+  +startDate: Date
+  +endDate: Date
+  +isBlocked: boolean
+}
+
+class Booking {
+  +id: UUID
+  +startDate: Date
+  +endDate: Date
+  +totalPrice: Money
+  +status: BookingStatus
+  +createdAt: DateTime
+}
+
+enum BookingStatus {
+  REQUESTED
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+class Payment {
+  +id: UUID
+  +amount: Money
+  +method: String
+  +status: PaymentStatus
+  +paidAt: DateTime
+}
+
+enum PaymentStatus {
+  INITIATED
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+class Review {
+  +id: UUID
+  +rating: int
+  +comment: String
+  +createdAt: DateTime
+}
+
+class ChatSession {
+  +id: UUID
+  +startedAt: DateTime
+}
+
+class Message {
+  +id: UUID
+  +sender: String
+  +content: String
+  +timestamp: DateTime
+}
+
+User "1" -- "0..*" Listing : owns >
+Listing <|-- PropertyListing
+Listing <|-- EquipmentListing
+
+Listing "1" -- "0..*" AvailabilitySlot : has >
+User "1" -- "0..*" Booking : makes >
+Listing "1" -- "0..*" Booking : bookedFor >
+Booking "1" -- "0..1" Payment : payment >
+Booking "1" -- "0..1" Review : review >
+Review "1" -- "1" User : writtenBy >
+Review "1" -- "1" Listing : about >
+
+ChatSession "1" -- "0..*" Message : contains >
+User "1" -- "0..*" ChatSession : starts >
+@enduml

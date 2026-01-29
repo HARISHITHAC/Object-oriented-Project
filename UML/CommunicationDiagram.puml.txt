@@ -1,0 +1,57 @@
+@startuml
+allowmixing
+left to right direction
+skinparam shadowing false
+skinparam linetype ortho
+
+' Big gaps
+skinparam nodesep 90
+skinparam ranksep 120
+skinparam padding 20
+
+' Improve label readability
+skinparam ArrowFontSize 14
+skinparam DefaultFontSize 14
+
+' ---- Nodes ----
+object "Renter\n(UI)" as UI
+object "Chatbot\nService" as Bot
+object "Listing\nService" as LS
+database "DB" as DB
+object "Booking\nService" as BS
+object "Payment\nService" as PS
+
+' ---- Force layout (2 rows) ----
+' Top row: Bot -> LS -> DB
+' Bottom row: UI -> PS -> BS
+Bot -[hidden]-> LS
+LS  -[hidden]-> DB
+UI  -[hidden]-> PS
+PS  -[hidden]-> BS
+
+' Keep UI below Bot (separate row)
+Bot -[hidden]down-> UI
+
+' Keep DB above Booking (so booking stays bottom row)
+DB -[hidden]down-> BS
+
+' ---- Messages (keep them short) ----
+' Search + Recommend (top row)
+UI  --> Bot : 1. askPreferences()
+Bot --> LS  : 2. searchListings(criteria)
+LS  --> DB  : 3. queryListings()
+DB  --> LS  : 4. listings
+LS  --> Bot : 5. rankedListings
+Bot --> UI  : 6. recommendations(list)
+
+' Booking + Payment (bottom row)
+UI --> BS : 7. requestBooking(dates)
+BS --> DB : 8. checkAvailability()
+DB --> BS : 9. available
+UI --> PS : 10. pay(amount)
+PS --> DB : 11. saveTransaction()
+PS --> BS : 12. confirmBooking()
+BS --> DB : 13. setStatus(CONFIRMED)
+BS --> UI : 14. confirmation(receipt)
+
+@enduml

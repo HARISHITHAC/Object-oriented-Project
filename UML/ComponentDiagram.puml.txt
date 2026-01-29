@@ -1,0 +1,44 @@
+@startuml
+skinparam componentStyle rectangle
+skinparam shadowing false
+
+package "Client Apps" {
+  [Web UI] as Web
+  [Desktop UI] as Desktop
+}
+
+package "Backend (Python)" {
+  [Auth Module] as Auth
+  [Listing Service] as Listing
+  [Booking Service] as Booking
+  [Payment Service] as Payment
+  [Review Service] as Review
+  [Chatbot Service] as Chatbot
+}
+
+database "Database\n(SQLite/PostgreSQL)" as DB
+cloud "External LLM API\n(Optional)" as LLM
+
+Web --> Auth
+Web --> Listing
+Web --> Booking
+Web --> Payment
+Web --> Review
+Web --> Chatbot
+
+Desktop --> Auth
+Desktop --> Listing
+Desktop --> Booking
+Desktop --> Payment
+Desktop --> Review
+Desktop --> Chatbot
+
+Auth --> DB
+Listing --> DB
+Booking --> DB
+Payment --> DB
+Review --> DB
+Chatbot --> DB
+
+Chatbot --> LLM : prompt/response (optional)
+@enduml

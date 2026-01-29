@@ -1,0 +1,39 @@
+@startuml
+skinparam shadowing false
+
+start
+:Open platform;
+if (Logged in?) then (yes)
+else (no)
+  :Register/Login;
+endif
+
+:Search listings (filters);
+:View listing details;
+:Select dates & quantity;
+
+if (Available?) then (yes)
+  :Create booking request;
+  if (Host approval required?) then (yes)
+    :Notify host;
+    :Host approves/rejects;
+    if (Approved?) then (yes)
+      :Proceed to payment;
+    else (no)
+      :Show rejection reason;
+      stop
+    endif
+  else (no)
+    :Auto-approve booking;
+    :Proceed to payment;
+  endif
+
+  :Payment (prototype simulation);
+  :Generate receipt;
+  :Booking confirmed;
+else (no)
+  :Suggest alternatives (chatbot / search);
+endif
+
+stop
+@enduml
