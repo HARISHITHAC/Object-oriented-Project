@@ -1,0 +1,93 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor Renter as Primary
+actor Host as Secondary
+
+rectangle "RentMate – Smart Rental Platform (Scope)" {
+
+  usecase "Search & Filter Listings" as UC_Search
+  usecase "Chat with GenAI Concierge" as UC_Chat
+  usecase "Request Booking" as UC_Book
+  usecase "Make Payment (Prototype)" as UC_Pay
+  usecase "Manage Listings" as UC_List
+  usecase "Manage Availability" as UC_Avail
+
+  ' Relationships (correct notation)
+  UC_Book ..> UC_Search : <<include>>
+  UC_Pay  ..> UC_Book   : <<include>>
+  UC_Chat ..> UC_Search : <<extend>>
+  UC_Avail ..> UC_List  : <<include>>
+}
+
+' Actor associations
+Primary --> UC_Search
+Primary --> UC_Chat
+Primary --> UC_Book
+Primary --> UC_Pay
+
+Secondary --> UC_List
+Secondary --> UC_Avail
+Secondary --> UC_Book
+
+' ---- Notes: 1 paragraph each (actors + use cases) ----
+
+note right of Primary
+The Renter is the primary actor who uses RentMate to find properties or equipment to rent.
+They browse listings using search and filters, may ask the GenAI concierge for guidance,
+and complete a booking by selecting dates and confirming payment. The renter’s goal is to
+secure a suitable rental efficiently while following platform rules and policies.
+end note
+
+note right of Secondary
+The Host is a secondary actor who provides inventory to the marketplace by creating and
+maintaining listings for properties or equipment. The host manages rental availability,
+reviews booking requests when applicable, and ensures listing information (pricing, rules,
+and descriptions) is accurate. The host’s goal is to rent out items safely and reliably.
+end note
+
+note bottom of UC_Search
+This use case allows the renter to search and filter listings by category (property/equipment),
+location, price range, and desired rental confirmation window. The system retrieves matching
+listings and displays key information (title, price, location, and availability) so the renter
+can quickly evaluate options and navigate to a listing detail page for further review.
+end note
+
+note bottom of UC_Chat
+This use case provides an interactive GenAI concierge experience that helps the renter clarify
+their needs and discover suitable rentals. The chatbot asks questions (dates, budget, location,
+and item type), answers common FAQs (policies, deposits, rules), and then recommends listings
+based on the renter’s constraints. It extends Search by assisting the renter in refining criteria.
+end note
+
+note bottom of UC_Book
+This use case begins when the renter selects a listing and proposes rental dates. The system
+checks availability, creates a booking request, and (optionally) routes it to the host for approval
+depending on the project’s chosen workflow. When approved (or auto-approved), the booking proceeds
+to payment so the renter can confirm the reservation and the system can reserve the dates.
+end note
+
+note bottom of UC_Pay
+This use case completes the booking by collecting payment through a prototype payment process.
+The system calculates the amount due from dates and price-per-day (plus optional deposit), records
+a transaction, updates the booking status to CONFIRMED, and generates a receipt for the renter.
+For the course project, payment can be simulated without integrating a real payment gateway.
+end note
+
+note bottom of UC_List
+This use case enables the host to create, edit, deactivate, or remove listings for properties or
+equipment. The host provides core attributes such as title, description, category, location, pricing,
+rules, and optional images. The system validates required fields, stores the listing, and makes it
+searchable when marked active so renters can discover it in the marketplace.
+end note
+
+note bottom of UC_Avail
+This use case allows the host to define and maintain availability for each listing by blocking dates
+or setting open rental windows. The system stores availability slots and uses them during booking to
+prevent double-booking. This use case includes Manage Listings because availability management is
+performed in the context of a particular listing owned by the host.
+end note
+
+@enduml
